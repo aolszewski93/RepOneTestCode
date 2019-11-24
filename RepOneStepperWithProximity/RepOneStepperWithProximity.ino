@@ -16,14 +16,19 @@ int driverPUL = 7;    // PUL- pin
 int driverDIR = 6;    // DIR- pin
  
 // Variables
- 
+
 int pd = 500;       // Pulse Delay period
 boolean setdir = LOW; // Set Direction
-int driverPosition = 3500; // set the number of steps the motor has to make to return to RepOne sensor. 
- 
- 
+int stepsPerRev = 800; // this is set on the digital stepper driver
+//int diameterOfWheel = 0.5; // the diameter of the wheel is around 0.5 ft
+//int lengthOfRetraction = 6; // we want the RepOne Sensor 6 ft away from test fixture.
+int driverPosition = (stepsPerRev * 4.2) ; // set the number of steps the motor has to make to return to RepOne sensor. 
+// 
+// 
 void setup() {
   Serial.begin(9600); // set up serial object to print to a monitor
+  Serial.print("The motor will make: ");
+  Serial.print(driverPosition);
   pinMode(proxSensor, INPUT); // set the proximity sensor as an input
   pinMode (driverPUL, OUTPUT); // pulse pin as output
   pinMode (driverDIR, OUTPUT); // direction pin as output
@@ -42,17 +47,17 @@ void loop() {
     Serial.println("Return to Base.");  //print what program is doing
 
     // run a for loop that steps the motor to where the module being tested is.
-    for(int steps = 0; steps < 3500; steps++){
+    for(int steps = 0; steps < driverPosition; steps++){
       digitalWrite(driverDIR,!setdir); //change direction of the motor
       digitalWrite(driverPUL,HIGH);
-      delayMicroseconds(pd);
+      delayMicroseconds(pd*500);
       digitalWrite(driverPUL,LOW);
-      delayMicroseconds(pd);
+      delayMicroseconds(pd*500);
     }
-    
+//    delay(100000000);
   }
   else{
-    Serial.println("Keep Pulling!"); //print what program is doing
+//    Serial.println("Keep Pulling!"); //print what program is doing
   }
       // set the direction of the motor and git the driver a pulse.
       digitalWrite(driverDIR,setdir);
