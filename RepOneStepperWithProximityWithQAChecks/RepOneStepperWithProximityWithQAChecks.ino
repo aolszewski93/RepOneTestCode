@@ -15,6 +15,7 @@ int proxSensor = 2;  // Proximity Sensor pin
 int driverPUL = 7;    // PUL- pin
 int driverDIR = 6;    // DIR- pin
 int switchPin = 4;    // input for the switch pin
+int slidePin = 10;   // input for the slide switch that selects what type of program we run
  
 // Variables
 
@@ -83,21 +84,34 @@ void userCheck(){
 
 void setup() {
   Serial.begin(9600); // set up serial object to print to a monitor
-  Serial.print("The motor will make: ");
+  Serial.println("The motor will make: ");
   Serial.print(driverPosition);
   pinMode(proxSensor, INPUT); // set the proximity sensor as an input
   pinMode (driverPUL, OUTPUT); // pulse pin as output
   pinMode (driverDIR, OUTPUT); // direction pin as output
   pinMode(switchPin, INPUT); // sets switch pin as input
+  pinMode(slidePin, INPUT); // set slide pin as input
   
 }
  
 void loop() {
-  tetherFishing(1);
-  userCheck();
-  tetherFishing(2);
-  userCheck();
-  tetherFishing(3);
+  int prog = digitalRead(slidePin); // reads status of the switch
+
+  //if switch returns 1 run drop test else run lift test
+  if(prog == 1){
+    Serial.println("Running Drop Test");
+    tetherFishing(1);
+    userCheck();
+    tetherFishing(2);
+    userCheck();
+    tetherFishing(3);
+    delay(500);
+  }
+  else{
+    Serial.println("Running Lift Test");
+    delay(500);
+  }
+  
 //  userCheck();
 //  tetherFishing(200);
 //  userCheck();
