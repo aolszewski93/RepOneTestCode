@@ -28,7 +28,8 @@ boolean setdir = LOW; // Set Direction
 int stepsPerRev = 800; // this is set on the digital stepper driver
 //int diameterOfWheel = 0.5; // the diameter of the wheel is around 0.5 ft
 //int lengthOfRetraction = 6; // we want the RepOne Sensor 6 ft away from test fixture.
-int driverPosition = (stepsPerRev * 4) ; // set the number of steps the motor has to make to return to RepOne sensor. 
+int driverPosition = (stepsPerRev * 4) ; // set the number of steps the motor has to make to return to RepOne sensor.
+int lifePosition = (stepsPerRev * 3.45) ; // set distance to return to life testing 
 // 
 // 
 
@@ -45,13 +46,14 @@ void tetherFishing(int numReps, int i = 0){
       Serial.println("Return to Base.");  //print what program is doing
       Serial.print("Cycle: "); 
       Serial.println(i);
+      delay(500);
       // run a for loop that steps the motor to where the module being tested is.
       for(int steps = 0; steps < driverPosition; steps++){
         digitalWrite(driverDIR,!setdir); //change direction of the motor
         digitalWrite(driverPUL,HIGH);
-        delayMicroseconds(pd*10);
+        delayMicroseconds(pd);
         digitalWrite(driverPUL,LOW);
-        delayMicroseconds(pd*10);
+        delayMicroseconds(pd);
       }
       
   //    delay(100000000);
@@ -70,6 +72,40 @@ void tetherFishing(int numReps, int i = 0){
   
 }
 
+void lifeTesting(int numReps, int i = 0){
+  
+  while(i < numReps){
+    // read the proximity sensor
+    int val = digitalRead(proxSensor); 
+  
+    // check if the proximity sensor is triggered.
+    if(val != 1){
+      i++;
+      Serial.println("Return to Base.");  //print what program is doing
+      Serial.print("Cycle: "); 
+      Serial.println(i);
+      delay(500);
+      // run a for loop that steps the motor to where the module being tested is.
+      for(int steps = 0; steps < lifePosition; steps++){
+        digitalWrite(driverDIR,!setdir); //change direction of the motor
+        digitalWrite(driverPUL,HIGH);
+        delayMicroseconds(pd);
+        digitalWrite(driverPUL,LOW);
+        delayMicroseconds(pd);
+      }
+      delay(500);
+    }
+        // set the direction of the motor and git the driver a pulse.
+        digitalWrite(driverDIR,setdir);
+        digitalWrite(driverPUL,HIGH);
+        delayMicroseconds(pd);
+        digitalWrite(driverPUL,LOW);
+        delayMicroseconds(pd);
+        
+      // if sensor is 0 have it return to initial value. 
+  }
+  
+}
 
 void userCheck(){
   int j = 0;
@@ -79,7 +115,7 @@ void userCheck(){
     j = digitalRead(switchPin);
   }
   Serial.println(j);
-  delay(5000);
+  delay(200);
 
 }
 
@@ -106,27 +142,29 @@ void loop() {
     Serial.println("Running Drop Test");
     tetherFishing(1); //run 1 test rep
     userCheck();
-    tetherFishing(10);
+    tetherFishing(2); //run 2 test rep
     userCheck();
-    tetherFishing(50);
-    userCheck();
-    tetherFishing(200);
-    userCheck();
-    tetherFishing(500);
+//    tetherFishing(10);
+//    userCheck();
+//    tetherFishing(50);
+//    userCheck();
+//    tetherFishing(200);
+//    userCheck();
+//    tetherFishing(500);
     delay(500);
   }
   else{
     // run life testing with checks after 1000, 20000, 100000, and 300000 reps
     Serial.println("Running Life Test");
-    tetherFishing(1); //run one test rep
+    lifeTesting(1); //run one test rep
     userCheck();
-    tetherFishing(1000);
+    lifeTesting(1000);
     userCheck();
-    tetherFishing(20000);
+    lifeTesting(20000);
     userCheck();
-    tetherFishing(100000);
+    lifeTesting(100000);
     userCheck();
-    tetherFishing(300000);
+    lifeTesting(300000);
     delay(500);
   }
   
