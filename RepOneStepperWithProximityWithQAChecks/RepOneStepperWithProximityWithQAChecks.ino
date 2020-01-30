@@ -1,7 +1,7 @@
 /*
  * Author: Albert Michael Olszewski
  * Company: RepOne
- * Date: 12/13/2019
+ * Date: 01/26/2020
   Stepper Motor with Proximity Sensor for durability tests on the RepOne Strength unit.
   The test fixture this code programs uses a NEMA 17 stepper motor from stepper online,
   a DM542T Digital Stepping Driver, a Twidec 10mm Proximity Sensor, and an Arduino Uno. 
@@ -12,6 +12,10 @@
   release the tether, and then retrieve it. 
 
 */
+
+// Include Dependencies
+#include <AccelStepper.h>
+
  
 // Define pins
  
@@ -26,12 +30,12 @@ int slidePin = 10;   // input for the slide switch that selects what type of pro
 int pd = 200;       // Pulse Delay period
 boolean setdir = LOW; // Set Direction
 int stepsPerRev = 800; // this is set on the digital stepper driver
-//int diameterOfWheel = 0.5; // the diameter of the wheel is around 0.5 ft
-//int lengthOfRetraction = 6; // we want the RepOne Sensor 6 ft away from test fixture.
 int driverPosition = (stepsPerRev * 4) ; // set the number of steps the motor has to make to return to RepOne sensor.
 int lifePosition = (stepsPerRev * 3.45) ; // set distance to return to life testing 
 // 
-// 
+// Define Objects
+AccelStepper stepper(1,7,6);
+ 
 
 void tetherFishing(int numReps, int i = 0){
   
@@ -67,6 +71,36 @@ void tetherFishing(int numReps, int i = 0){
         delayMicroseconds(pd);
         digitalWrite(driverPUL,LOW);
         delayMicroseconds(pd);
+      // if sensor is 0 have it return to initial value. 
+  }
+  
+}
+
+
+void lifeTestingAccelStep(int numReps, int i = 0){
+    while(i < numReps){
+    // read the proximity sensor
+    int val = digitalRead(proxSensor); 
+  
+    // check if the proximity sensor is triggered.
+    if(val != 1){
+      i++;
+      stepper.setCurrentPosition(0); // set current position as 0
+      Serial.println("Return to Base.");  //print what program is doing
+      Serial.print("Cycle: "); 
+      Serial.println(i);
+      delay(100);
+      stepper.runToNewPosition(lifePosition);  //move stepper to the base
+      delay(100);
+      stepper.runToNewPosition(30); // move close to the proximity sensor
+      digitalWrite(driverDIR,setdir); // set the direction of the stepper to pull up
+    }
+      // set the direction of the motor and git the driver a pulse.
+
+      digitalWrite(driverPUL,HIGH);
+      delayMicroseconds(pd*4);
+      digitalWrite(driverPUL,LOW);
+      delayMicroseconds(pd*4);
       // if sensor is 0 have it return to initial value. 
   }
   
@@ -130,6 +164,11 @@ void setup() {
   pinMode (driverDIR, OUTPUT); // direction pin as output
   pinMode(switchPin, INPUT); // sets switch pin as input
   pinMode(slidePin, INPUT); // set slide pin as input
+
+
+  stepper.setMaxSpeed(4000);
+  stepper.setAcceleration(4000);
+  
   
 }
  
@@ -156,16 +195,18 @@ void loop() {
   else{
     // run life testing with checks after 1000, 20000, 100000, and 300000 reps
     Serial.println("Running Life Test");
-    lifeTesting(1); //run one test rep
+    lifeTestingAccelStep(2);
     userCheck();
-    lifeTesting(1000);
+    lifeTestingAccelStep(1000);
     userCheck();
-    lifeTesting(20000);
+    lifeTestingAccelStep(20000);
     userCheck();
-    lifeTesting(100000);
+    lifeTestingAccelStep(100000);
     userCheck();
-    lifeTesting(300000);
-    delay(500);
+    lifeTestingAccelStep(300000);
+    Serial.println("Done with Life Test");
+    userCheck();
+
   }
   
 
