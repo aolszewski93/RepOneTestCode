@@ -27,6 +27,8 @@ int slidePin = 10;   // input for the slide switch that selects what type of pro
  
 // Variables
 
+unsigned long lastTrigger;
+unsigned long timeBetween;
 int pd = 200;       // Pulse Delay period
 boolean setdir = LOW; // Set Direction
 int stepsPerRev = 800; // this is set on the digital stepper driver
@@ -78,12 +80,24 @@ void tetherFishing(int numReps, int i = 0){
 
 
 void lifeTestingAccelStep(int numReps, int i = 0){
+    
+    lastTrigger = millis(); //set an initial value for last trigger
+    
     while(i < numReps){
     // read the proximity sensor
     int val = digitalRead(proxSensor); 
-  
+
+    timeBetween = millis() - lastTrigger;
+    // check time since last trigger
+    if(timeBetween > 6000){
+        Serial.println("Motor Jam Interrupt");
+        userCheck();
+        lastTrigger = millis(); //reset last trigger
+      }
+      
     // check if the proximity sensor is triggered.
     if(val != 1){
+      lastTrigger = millis(); // set variable to log when the proximity sensor was triggered
       i++;
       stepper.setCurrentPosition(0); // set current position as 0
       Serial.println("Return to Base.");  //print what program is doing
@@ -96,7 +110,6 @@ void lifeTestingAccelStep(int numReps, int i = 0){
       digitalWrite(driverDIR,setdir); // set the direction of the stepper to pull up
     }
       // set the direction of the motor and git the driver a pulse.
-
       digitalWrite(driverPUL,HIGH);
       delayMicroseconds(pd*4);
       digitalWrite(driverPUL,LOW);
