@@ -79,7 +79,7 @@ void tetherFishing(int numReps, int i = 0){
 }
 
 
-void lifeTestingAccelStep(int numReps, int i = 0){
+void lifeTestingAccelStep(long numReps, int i = 0){
     
     lastTrigger = millis(); //set an initial value for last trigger
     
@@ -210,10 +210,10 @@ void loop() {
     Serial.println("Running Life Test");
     lifeTestingAccelStep(2);
     userCheck();
-    lifeTestingAccelStep(1000);
-    userCheck();
-    lifeTestingAccelStep(20000);
-    userCheck();
+//    lifeTestingAccelStep(1000);
+//    userCheck();
+//    lifeTestingAccelStep(20000);
+//    userCheck();
     lifeTestingAccelStep(100000);
     userCheck();
     lifeTestingAccelStep(300000);
