@@ -26,7 +26,7 @@ int switchPin = 4;    // input for the switch pin
 int pd = 200;       // Pulse Delay period
 boolean setdir = LOW; // Set Direction
 int stepsPerRev = 800; // this is set on the digital stepper driver
-int driverPosition = (stepsPerRev * 4) ; // set the number of steps the motor has to make to return to RepOne sensor.
+int driverPosition = (stepsPerRev * 3.75) ; // set the number of steps the motor has to make to return to RepOne sensor.
 
 // Define Objects
 AccelStepper stepper(1,7,6);
@@ -70,11 +70,12 @@ void calibrate(int numReps, int i = 0){
   while(i < numReps){
     stepper.runToNewPosition(driverPosition); //move tether to base
     delay(100);
-    stepper.runToNewPosition(40); //move tether to just below the proximity sensor
+    stepper.runToNewPosition(45); //move tether to just below the proximity sensor
     delay(100);
+    i++;
     Serial.print(i);
   }
-
+  Serial.println("");
   Serial.println("Done Calibrating...");
 }
 
@@ -95,6 +96,7 @@ void loop() {
   setZero();
   userCheck();
   calibrate(20);
+  userCheck();
   
   
 }

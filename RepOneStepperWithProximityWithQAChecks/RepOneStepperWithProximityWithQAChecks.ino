@@ -1,8 +1,8 @@
 /*
  * Author: Albert Michael Olszewski
- * Company: RepOne
+ * Company: RepOneStrength
  * Date: 01/26/2020
-  Stepper Motor with Proximity Sensor for durability tests on the RepOne Strength unit.
+  Stepper Motor with Proximity Sensor for durability tests on the RepOneStrength unit.
   The test fixture this code programs uses a NEMA 17 stepper motor from stepper online,
   a DM542T Digital Stepping Driver, a Twidec 10mm Proximity Sensor, and an Arduino Uno. 
 
