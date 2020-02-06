@@ -48,6 +48,7 @@ void setZero(int i = 0){
     delayMicroseconds(pd*4);
     digitalWrite(driverPUL,LOW);
     delayMicroseconds(pd*4);
+  }
 }
 
 //create a function to have system wait for user to begin next step
@@ -92,7 +93,7 @@ void setup() {
 void loop() {
   Serial.println("Initializing Calibration Reps...");
   setZero();
-  usercheck();
+  userCheck();
   calibrate(20);
   
   
